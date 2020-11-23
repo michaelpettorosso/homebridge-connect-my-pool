@@ -1,0 +1,44 @@
+{
+  "name": "homebridge-connect-my-pool",
+  "version": "0.0.1",
+  "description": "Javascript library to connect to Astral Viron Gateway",
+  "main": "index.js",
+  "license": "ISC",
+  "scripts": {
+    "pretest": "eslint --ignore-path .gitignore package.json config.schema.json",
+    "test": "xo"
+  },
+  "keywords": [
+    "Pool",
+    "Equipment",
+    "Astral",
+    "HomeBridge",
+    "homebridge-plugin"
+  ],
+  "engines": {
+    "node": ">=5.0.0",
+    "homebridge": ">=0.4.5"
+  },
+  "author": "Michael Pettorosso",
+  "contributors": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/michaelpettorosso/homebridge-connect-my-pool.git"
+  },
+  "devDependencies": {
+    "eslint": "^6.3.0",
+    "eslint-plugin-json": "^1.4.0"
+  },
+  "dependencies": {
+    "async": "^3.2.0",
+    "cheerio": "^1.0.0-rc.3",
+    "events": "^3.2.0",
+    "moment": "^2.29.1",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6"
+  },
+  "homepage": "https://github.com/michaelpettorosso/homebridge-connect-my-pool#readme",
+  "bugs": {
+    "url": "https://github.com/michaelpettorosso/homebridge-connect-my-pool/issues"
+  }
+}
