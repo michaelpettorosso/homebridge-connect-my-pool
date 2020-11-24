@@ -25,8 +25,8 @@ module.exports = class Gateway extends EventEmitter {
     _intervalID = null;
     constructor(config, logger) {
         super();
-        this.user = config.user || 'michael@pettorosso.com';
-        this.pass = config.pass || 'C00per40'
+        this.user = config.user || 'email';
+        this.pass = config.pass || 'password'
         this.poolId = null;
         this.log = logger;
     }
