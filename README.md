@@ -1,9 +1,11 @@
 <SPAN ALIGN="CENTER">
 
-homebridge-connect-my-pool: [Native HomeKit support for Astral Connect My Pool](https://github.com/michaelpettorosso/homebridge-connect-my-pool).
+[![homebridge-connect-my-pool: Native HomeKit support for Astral Connect My Pool](https://github.com/michaelpettorosso/homebridge-connect-my-pool)
 
 # Homebridge Astral Connect My Pool
 
+[![Downloads](https://img.shields.io/npm/dt/homebridge-connect-my-pool?color=38A8E0&style=for-the-badge)](https://www.npmjs.com/package/homebridge-connect-my-pool)
+[![Version](https://img.shields.io/npm/v/homebridge-connect-my-pool?label=homebridge-doorbird&color=38A8E0&style=for-the-badge)](https://www.npmjs.com/package/homebridge-connect-my-pool)
 ## HomeKit support for Astral Connect My Pool using [Homebridge](https://homebridge.io).
 </SPAN>
 
