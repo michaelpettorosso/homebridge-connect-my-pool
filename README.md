@@ -1,6 +1,6 @@
 <SPAN ALIGN="CENTER">
 
-[![homebridge-connect-my-pool: Native HomeKit support for Astral Connect My Pool](https://github.com/michaelpettorosso/homebridge-connect-my-pool)
+homebridge-connect-my-pool: [Native HomeKit support for Astral Connect My Pool](https://github.com/michaelpettorosso/homebridge-connect-my-pool).
 
 # Homebridge Astral Connect My Pool
 
