@@ -38,7 +38,6 @@ export class Controller {
 export class Zone {
     name:string; 
     type: string; 
-
     constructor(name: string, type: string){
         this.name = name;
         this.type = type
@@ -69,7 +68,7 @@ export class PoolSpaResponse extends ZoneResponse {
     isSpaJetsRunning: boolean = false;
     spaBlowerMode: string | null;
     isSpaBlowerRunning: boolean = false;
-    constructor(zoneType: string, poolSpaMode: string | null, poolFilterMode: string | null, isPoolFilterRunning: boolean, spaBlowerMode: string | null, isSpaJetsRunning: boolean, spaJetsMode: string | null, isSpaBlowerRunning: boolean, inputs?: InputField[]){
+    constructor(zoneType: string, poolSpaMode: string | null, poolFilterMode: string | null, isPoolFilterRunning: boolean, spaJetsMode: string | null, isSpaJetsRunning: boolean, spaBlowerMode: string | null, isSpaBlowerRunning: boolean, inputs?: InputField[]){
         super(zoneType, inputs)
         this.poolSpaMode = poolSpaMode;
         this.poolFilterMode = poolFilterMode;

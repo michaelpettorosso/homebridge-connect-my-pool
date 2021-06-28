@@ -2,16 +2,21 @@
 import { ConnectMyPoolPlatform } from "../connect-my-pool-platform";
 import { ZoneAccessory } from "./zoneAccessory";
 import { PoolSpaResponse, Controller, Zone } from '../ajaxResponse';
-import { Service } from "homebridge";
-import { ZONES } from "../constants";
+import { Categories, Service } from "homebridge";
+import { ON_OFF_AUTO, POOL_SPA, ZONES } from "../constants";
 export class PoolSpaAccessory extends ZoneAccessory {
   currentStatus!: PoolSpaResponse;
   previousStatus!: PoolSpaResponse;
   protected poolFilterSensorService!: Service;
   protected spaJetsSensorService!: Service;
   protected spaBlowerSensorService!: Service;
+  protected spaJetsSwitchService!: Service;
+  protected spaBlowerSwitchService!: Service;
+  protected poolFilterPoolModeService!: Service;
+  protected poolFilterSpaModeService!: Service;
+
   constructor(platform : ConnectMyPoolPlatform, controller: Controller, zone: Zone) {
-         super(platform, controller, zone);
+         super(platform, controller, zone, Categories.SENSOR);
     
     //this.setUpServices();
     //accessory.updateReachability(true);
@@ -29,18 +34,33 @@ export class PoolSpaAccessory extends ZoneAccessory {
 
       this.poolFilterSensorService.getCharacteristic(this.Characteristic.StatusActive)
         .updateValue(this.getIsPoolFilterRunning(newStatus));
-      this.poolFilterSensorService.getCharacteristic(this.Characteristic.ContactSensorState)
+      
+        this.poolFilterSensorService.getCharacteristic(this.Characteristic.ContactSensorState)
         .updateValue(this.getPoolFilterContactSensorState(newStatus));
       
       this.spaJetsSensorService.getCharacteristic(this.Characteristic.StatusActive)
         .updateValue(this.getIsSpaJetsRunning(newStatus));
-      this.spaJetsSensorService.getCharacteristic(this.Characteristic.ContactSensorState)
+      
+        this.spaJetsSensorService.getCharacteristic(this.Characteristic.ContactSensorState)
         .updateValue(this.getSpaJetsContactSensorState(newStatus));
 
       this.spaBlowerSensorService.getCharacteristic(this.Characteristic.StatusActive)
         .updateValue(this.getIsSpaBlowerRunning(newStatus));
-      this.spaBlowerSensorService.getCharacteristic(this.Characteristic.ContactSensorState)
+      
+        this.spaBlowerSensorService.getCharacteristic(this.Characteristic.ContactSensorState)
         .updateValue(this.getSpaBlowerContactSensorState(newStatus));  
+
+      this.spaJetsSwitchService.getCharacteristic(this.Characteristic.On)
+        .updateValue(this.getSpaJetsModeState(newStatus)); 
+        
+      this.spaBlowerSwitchService.getCharacteristic(this.Characteristic.On)
+        .updateValue(this.getSpaBlowerModeState(newStatus));
+
+      this.poolFilterPoolModeService.getCharacteristic(this.Characteristic.On)
+        .updateValue(this.getPoolFilterPoolModeState(newStatus));  
+      
+        this.poolFilterSpaModeService.getCharacteristic(this.Characteristic.On)
+        .updateValue(this.getPoolFilterSpaModeState(newStatus));       
       this.currentStatus = newStatus;
     }
   }
@@ -70,6 +90,34 @@ export class PoolSpaAccessory extends ZoneAccessory {
     return value;
   }
 
+  private getPoolFilterPoolModeState(newStatus?: PoolSpaResponse): boolean {
+    var value = this.getPoolModeState(newStatus) === POOL_SPA.POOL;
+    this.debug('Get Pool Filter Pool Mode State:', value);
+    return value
+  }
+
+  private getPoolFilterSpaModeState(newStatus?: PoolSpaResponse): boolean {
+    var value = this.getPoolModeState(newStatus) === POOL_SPA.SPA;
+
+    this.debug('Get Pool Filter Spa Mode State:', value);
+    return value
+  }
+
+  private getPoolModeState(newStatus?: PoolSpaResponse) {
+    var status = newStatus ?? this.previousStatus;
+    // set this to a valid value for CurrentTemperature
+    return status?.poolSpaMode ?? POOL_SPA.POOL;
+  }
+
+     
+  private getSpaJetsModeState(newStatus?: PoolSpaResponse) {
+    var status = newStatus ?? this.previousStatus;
+    // set this to a valid value for CurrentTemperature
+    var value = (status?.spaJetsMode ?? ON_OFF_AUTO.OFF) === ON_OFF_AUTO.ON  ? true : false;
+    this.debug('Get Spa Jets Mode State:', value);
+    return value;
+  }
+
   private getIsSpaJetsRunning(newStatus?: PoolSpaResponse) {
     var status = newStatus ?? this.previousStatus;
     // set this to a valid value for CurrentTemperature
@@ -83,6 +131,14 @@ export class PoolSpaAccessory extends ZoneAccessory {
     // set this to a valid value for CurrentTemperature
     var value = status?.isSpaJetsRunning ?? false ? this.Characteristic.ContactSensorState.CONTACT_NOT_DETECTED : this.Characteristic.ContactSensorState.CONTACT_DETECTED;
     this.debug('Get Spa Jets Contact Sensor State:', value);
+    return value;
+  }
+
+  private getSpaBlowerModeState(newStatus?: PoolSpaResponse) {
+    var status = newStatus ?? this.previousStatus;
+    // set this to a valid value for CurrentTemperature
+    var value = (status?.spaBlowerMode ?? ON_OFF_AUTO.OFF) === ON_OFF_AUTO.ON  ? true : false;
+    this.debug('Get Spa Blower Mode State:', value);
     return value;
   }
 
@@ -111,11 +167,62 @@ export class PoolSpaAccessory extends ZoneAccessory {
   this.debug('setupServices', 'poolSpaAccessory');
   
   this.poolFilterSensorService = this.createPoolFilterSensorService();
-  this.zoneService.setPrimaryService(true);
   this.spaJetsSensorService = this.createSpaJetsSensorService();
   this.spaBlowerSensorService = this.createSpaBlowerSensorService();
+  this.spaJetsSwitchService = this.createSpaJetsSwitchService();
+  this.spaBlowerSwitchService = this.createSpaBlowerSwitchService();
+  this.createPoolSpaFilterModeSwitchService();
   super.setupServices();
   }
+
+// Configure the contact sensor on the Heater.
+private createPoolSpaFilterModeSwitchService() {
+
+  // Clear out any previous contact sensor service.
+  const poolFilterPoolModeService = this.accessory.getServiceById(this.Service.Switch, 'poolmode') || this.accessory.addService(this.Service.Switch, this.zone.name + " Pool Mode", 'poolmode');
+
+  poolFilterPoolModeService.getCharacteristic(this.Characteristic.On)
+    .setValue(this.getPoolFilterPoolModeState())
+    .onGet(this.getPoolFilterPoolModeState.bind(this))
+  
+  this.enabledServices.push(poolFilterPoolModeService);
+  this.poolFilterPoolModeService = poolFilterPoolModeService;
+  const poolFilterSpaModeService = this.accessory.getServiceById(this.Service.Switch, 'spamode') || this.accessory.addService(this.Service.Switch, this.zone.name + " Spa Mode", 'spamode');
+  poolFilterSpaModeService.getCharacteristic(this.Characteristic.On)
+    .setValue(this.getPoolFilterSpaModeState())
+    .onGet(this.getPoolFilterSpaModeState.bind(this))
+  
+  this.enabledServices.push(poolFilterSpaModeService);
+  this.poolFilterSpaModeService = poolFilterSpaModeService;
+}
+
+// Configure the contact sensor on the Heater.
+private createSpaJetsSwitchService(): Service {
+
+  // Clear out any previous contact sensor service.
+  const spaJetsSwitchService = this.accessory.getServiceById(this.Service.Switch, 'spajets') || this.accessory.addService(this.Service.Switch, this.zone.name + " Spa Jets", 'spajets');
+
+  spaJetsSwitchService.getCharacteristic(this.Characteristic.On)
+    .setValue(this.getSpaJetsModeState())
+    .onGet(this.getSpaJetsModeState.bind(this))
+  
+  this.enabledServices.push(spaJetsSwitchService);
+  return spaJetsSwitchService;
+}
+
+// Configure the contact sensor on the Heater.
+private createSpaBlowerSwitchService(): Service {
+
+  // Clear out any previous contact sensor service.
+  const spaBlowerSwitchService = this.accessory.getServiceById(this.Service.Switch, 'spablower') || this.accessory.addService(this.Service.Switch, this.zone.name + " Spa Blower", 'spablower');
+
+  spaBlowerSwitchService.getCharacteristic(this.Characteristic.On)
+    .setValue(this.getSpaBlowerModeState())
+    .onGet(this.getSpaBlowerModeState.bind(this))
+  
+  this.enabledServices.push(spaBlowerSwitchService);
+  return spaBlowerSwitchService;
+}
 
   // Configure the contact sensor on the Heater.
   private createPoolFilterSensorService(): Service {
@@ -157,7 +264,7 @@ export class PoolSpaAccessory extends ZoneAccessory {
   private createSpaBlowerSensorService(): Service {
 
     // Clear out any previous contact sensor service.
-    const spaBlowerSensorService = this.accessory.getServiceById(this.Service.ContactSensor, 'spablower') || this.accessory.addService(this.Service.ContactSensor, this.zone.name + " Spa Jets Running", 'spablower');
+    const spaBlowerSensorService = this.accessory.getServiceById(this.Service.ContactSensor, 'spablower') || this.accessory.addService(this.Service.ContactSensor, this.zone.name + " Blower Running", 'spablower');
 
     spaBlowerSensorService.getCharacteristic(this.Characteristic.StatusActive)
       .setValue(this.getIsSpaBlowerRunning())

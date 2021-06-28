@@ -65,7 +65,6 @@ export const COMMANDS = {
         
         id_pool: '#cpPageContent_RpChannel_hidden_0',
         id_pool_filter : '#cpPageContent_RpChannel_aCurrentStatus_0',
-        //cpPageContent_RpChannel_imgOn_0
         id_pool_filter_is_running: '#cpPageContent_RpChannel_imgOn_0',
         id_spa_jets : '#cpPageContent_RpChannel_aCurrentStatus_1',
         id_spa_jets_is_running: '#cpPageContent_RpChannel_imgOn_1',

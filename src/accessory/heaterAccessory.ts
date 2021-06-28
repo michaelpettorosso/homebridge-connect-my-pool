@@ -1,5 +1,4 @@
-import { val } from "cheerio/lib/api/attributes";
-import { Characteristic, CharacteristicGetCallback, CharacteristicSetCallback, CharacteristicValue, Service } from "homebridge";
+import { Categories, CharacteristicValue, Service } from "homebridge";
 import { HeaterResponse, Controller, Zone, SolarResponse, HeatingResponse  } from "../ajaxResponse";
 import { ConnectMyPoolPlatform } from "../connect-my-pool-platform";
 import { ON_OFF_AUTO, ZONES } from "../constants";
@@ -8,10 +7,11 @@ import {ZoneAccessory } from "./zoneAccessory";
 export abstract class HeaterAccessory extends ZoneAccessory {
   currentStatus!: HeaterResponse;
   previousStatus!: HeaterResponse;
+  protected zoneService!: Service;
   protected heaterSensorService!: Service;
   
   constructor(platform : ConnectMyPoolPlatform, controller: Controller, zone: Zone) {
-    super(platform, controller, zone);
+    super(platform, controller, zone, Categories.THERMOSTAT);
     
     //accessory.updateReachability(true);
   }

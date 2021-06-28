@@ -30,7 +30,7 @@ export class AstralGatewayAPI extends EventEmitter {
     get ConfiguredZones() : Zone[] {
         return [
             {
-                name: 'Pool Pumps',
+                name: 'Pool Filter',
                 type: ZONES.POOL_AND_SPA
             },
             {
@@ -78,7 +78,7 @@ export class AstralGatewayAPI extends EventEmitter {
                         //success!
                         const $ = cheerio.load(body)
 
-                        if ($('#ucLogin1$txtUserName').length > 0 )
+                        if ($('#ucLogin1_txtUserName').length > 0 && url !== URLS.login_url)
                         {
                            await this.login();
                            return this.request(url, method, formData, headers);

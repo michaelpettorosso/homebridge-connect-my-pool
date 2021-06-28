@@ -22,35 +22,21 @@ export abstract class ZoneAccessory {
     protected Service;
     protected Characteristic;
     
-    protected zoneService!: Service;
-    
     #buttons = {};
-    constructor(platform : ConnectMyPoolPlatform, controller: Controller, zone: Zone) {
+    constructor(platform : ConnectMyPoolPlatform, controller: Controller, zone: Zone, categories: Categories) {
         this.api = platform.api;
         this.debug = platform.debug.bind(platform);
         this.hap = this.api.hap;    
         this.Service = platform.api.hap.Service;
         this.Characteristic = platform.api.hap.Characteristic;
         this.log = platform.log;        
-        
-       
         this.platform = platform;
- 
-
         this.gateway = platform.gateway;
-
         const uuid = this.api.hap.uuid.generate(controller.name + zone.type);
 
         // create a new accessory
         this.log?.info('Adding new accessory: %s, %s', `${zone.name}`, zone.type);
-        var categories = Categories.THERMOSTAT;
-        if (zone.type === ZONES.POOL_AND_SPA)
-        categories = Categories.PROGRAMMABLE_SWITCH;
-        else if (zone.type === ZONES.LIGHTING)
-        categories = Categories.OUTLET;
-
         this.accessory = new this.api.platformAccessory(`${zone.name}`, uuid, categories);
-
         this.controller = controller;
         this.zone = zone;
 
